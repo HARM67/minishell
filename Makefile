@@ -3,10 +3,14 @@ INCLUDES=./includes
 INCLUDES_FT_PRINTF=./ft_printf/includes
 CC = clang
 LIB=./ft_printf/
-SRCS=main.c
 SRC_PATH=./srcs/
-OBJ=$(SRCS:.c=.o)
 FLAG=-Wall -Wextra -g
+
+SRCS= main.c app.c read_env.c put_error.c command.c loop.c get_next_line.c \
+	  built_in.c \
+	  bi_exit.c
+
+OBJ=$(SRCS:.c=.o)
 
 all: $(NAME)
 

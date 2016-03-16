@@ -1,26 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   put_error.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/03/16 12:57:48 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/16 15:09:31 by mfroehly         ###   ########.fr       */
+/*   Created: 2016/03/16 13:11:21 by mfroehly          #+#    #+#             */
+/*   Updated: 2016/03/16 13:12:02 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int main(int ac, char **av, char **env)
+void	put_error(char *str)
 {
-	t_app	app;
-
-	ft_bzero(&app, sizeof(t_app));
-	app.ac = ac;
-	app.av = av;
-	app.env = env;
-	init_app(&app);
-	run_app(&app);
-	return (0);
+	ft_putendl_fd(str, 2);
+	exit(1);
 }
