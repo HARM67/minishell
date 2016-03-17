@@ -7,7 +7,7 @@ SRC_PATH=./srcs/
 FLAG=-Wall -Wextra -g
 
 SRCS= main.c app.c read_env.c put_error.c command.c loop.c get_next_line.c \
-	  built_in.c \
+	  built_in.c execute.c environement.c \
 	  bi_exit.c
 
 OBJ=$(SRCS:.c=.o)

@@ -1,38 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   built_in.c                                         :+:      :+:    :+:   */
+/*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/03/16 22:06:05 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 14:34:57 by mfroehly         ###   ########.fr       */
+/*   Created: 2016/03/17 16:44:33 by mfroehly          #+#    #+#             */
+/*   Updated: 2016/03/17 17:22:27 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	init_built_in(t_app *app)
+void	execute(t_app *app)
 {
-	const t_built_in built_in[NBR_BUILTIN] = {
-		{"exit",4, *bi_exit}
-	};
-	ft_memcpy(app->bi_cmd, built_in, sizeof(t_built_in) * NBR_BUILTIN);
-}
+	int rt;
+	int	rt2;
+	char tab[] = {"/bin/ls", "-l"};
+	pid_t	father;
 
-int		check_built_in(t_app *app)
-{
-	int	i;
-
-	i = -1;
-	while (++i < NBR_BUILTIN)
+	father = fork();
+	if (father)
 	{
-		if (ft_strncmp(app->lst_cmd.first->command,
-			app->bi_cmd[i].command, app->bi_cmd[i].size) == 0)
-		{
-			app->bi_cmd[i].do_it(app);
-			return (1);
-		}
+		rt2 = wait(&rt);
 	}
-	return (0);
+	else
+	{
+		execve("/bin/ls", tab, app->env);
+	}
 }

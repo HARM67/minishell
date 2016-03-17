@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/16 21:49:52 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/17 18:01:16 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,5 +145,4 @@ void	decode_command(t_app *app)
 			cmd_token_2(app, *command);
 		command++;
 	}
-	print_lst_cmd(app);
 }
