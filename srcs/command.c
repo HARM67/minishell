@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 18:01:16 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/17 20:15:06 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,12 +50,16 @@ void	cmd_token_0(t_app *app, char c)
 		{
 			app->lst_cmd.token = 2;
 		}
-		else
+		else if (c != '$' && c != '~')
 		{
 			app->lst_cmd.last->command[app->lst_cmd.last->size] = c;
 			app->lst_cmd.last->size++;
 			app->lst_cmd.token = 1;
 		}
+		else if (c == '$')
+			app->lst_cmd.token = 3;
+		else if (c == '~')
+			app->lst_cmd.token = 5;
 	}
 }
 
@@ -75,24 +79,57 @@ void	clean_cmd(t_app *app)
 
 void	cmd_token_1(t_app *app, char c)
 {
-	if (c != ' ' && c != '\t')
+	if (c != ' ' && c != '\t' && c != '$' && c != '~')
 	{
 		app->lst_cmd.last->command[app->lst_cmd.last->size] = c;
 		app->lst_cmd.last->size++;
 	}
+	else if (c == '$')
+		app->lst_cmd.token = 3;
 	else
 		app->lst_cmd.token = 0;
 }
 
 void	cmd_token_2(t_app *app, char c)
 {
-	if (c != '"')
+	if (c != '"' && c != '$' && c != '~')
 	{
 		app->lst_cmd.last->command[app->lst_cmd.last->size] = c;
 		app->lst_cmd.last->size++;
 	}
+	else if (c == '$')
+		app->lst_cmd.token = 4;
 	else
 		app->lst_cmd.token = 0;
+}
+
+void	cmd_token_3_4(t_app *app, char c)
+{
+	int		i;
+	char	*tmp;
+
+	if (ft_isalnum(c))
+	{
+		app->lst_cmd.env_find[app->lst_cmd.env_find_tmp++] = c;
+	}
+	else
+	{
+		i = -1;
+		tmp = get_env(app, app->lst_cmd.env_find)->content;
+		while (tmp && *tmp)
+		{
+			app->lst_cmd.last->command[app->lst_cmd.last->size] = *tmp;
+			tmp++;
+			app->lst_cmd.last->size++;
+		}
+		app->lst_cmd.env_find_tmp = 0;
+		ft_bzero(app->lst_cmd.env_find, ENV_NAME_LENGTH);
+		if ((app->lst_cmd.token == 3 && (c == ' ' || c == '\t')) ||
+				(app->lst_cmd.token == 4 && c == '"'))
+			app->lst_cmd.token = 0;
+		else
+			app->lst_cmd.token -= 2;
+	}
 }
 
 void	print_lst_cmd(t_app *app)
@@ -143,6 +180,8 @@ void	decode_command(t_app *app)
 			cmd_token_1(app, *command);
 		else if (lst_command->token == 2)
 			cmd_token_2(app, *command);
+		else if (lst_command->token == 3 || lst_command->token == 4)
+			cmd_token_3_4(app, *command);
 		command++;
 	}
 }

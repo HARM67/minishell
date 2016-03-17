@@ -9,13 +9,14 @@
 # include <dirent.h>
 # include <sys/stat.h>
 # include <sys/types.h>
+# include <signal.h>
 
 # define ENV_NAME_LENGTH		256
 # define ENV_CONTENT_LENGTH		4096
 
 # define COMMAND_ELEM_LENGTH	1024
 # define BUILT_IN_CMD_LENGTH	256
-# define NBR_BUILTIN			1
+# define NBR_BUILTIN			2
 
 # define MAX_PROMT_LENGTH		256
 
@@ -46,9 +47,11 @@ struct				s_elem_command
 
 struct				s_command
 {
+	char			env_find[ENV_NAME_LENGTH];
 	t_elem_command	*first;
 	t_elem_command	*last;
 	t_elem_command	*current;
+	int				env_find_tmp;
 	int				size;
 	int				token;
 };
@@ -131,4 +134,9 @@ void				execute(t_app *app);
 ** environement
 */
 t_elem_env			*get_env(t_app *app, char *env);
+
+/*
+** prompt.c
+*/
+void				print_prompt(t_app *app);
 #endif

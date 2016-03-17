@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/17 16:44:43 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 18:07:18 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/17 19:17:09 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,14 +80,10 @@ void	execute(t_app *app)
 		ft_putendl("Cette commande en'existe pas");
 		return ;
 	}
-	ft_putendl(cmd);
+	//ft_putendl(cmd);
 	father = fork();
 	if (father)
-	{
 		rt2 = wait(&rt);
-	}
 	else
-	{
 		execve(cmd, cmd_to_tab(app) , env_to_tab(app));
-	}
 }
