@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 20:15:06 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/17 21:02:44 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,21 +106,24 @@ void	cmd_token_2(t_app *app, char c)
 void	cmd_token_3_4(t_app *app, char c)
 {
 	int		i;
+	t_elem_env	*tmp2;
 	char	*tmp;
 
 	if (ft_isalnum(c))
-	{
 		app->lst_cmd.env_find[app->lst_cmd.env_find_tmp++] = c;
-	}
 	else
 	{
 		i = -1;
-		tmp = get_env(app, app->lst_cmd.env_find)->content;
-		while (tmp && *tmp)
+		tmp2 = get_env(app, app->lst_cmd.env_find);
+		if (tmp2)
 		{
-			app->lst_cmd.last->command[app->lst_cmd.last->size] = *tmp;
-			tmp++;
-			app->lst_cmd.last->size++;
+			tmp = tmp2->content;
+			while (*tmp)
+			{
+				app->lst_cmd.last->command[app->lst_cmd.last->size] = *tmp;
+				tmp++;
+				app->lst_cmd.last->size++;
+			}
 		}
 		app->lst_cmd.env_find_tmp = 0;
 		ft_bzero(app->lst_cmd.env_find, ENV_NAME_LENGTH);
@@ -128,7 +131,13 @@ void	cmd_token_3_4(t_app *app, char c)
 				(app->lst_cmd.token == 4 && c == '"'))
 			app->lst_cmd.token = 0;
 		else
+		{
 			app->lst_cmd.token -= 2;
+		if (app->lst_cmd.token == 1)
+			cmd_token_1(app, c);
+		else if (app->lst_cmd.token == 2)
+			cmd_token_2(app, c);
+		}
 	}
 }
 
@@ -184,4 +193,6 @@ void	decode_command(t_app *app)
 			cmd_token_3_4(app, *command);
 		command++;
 	}
+	if (lst_command->token == 3 || lst_command->token == 4)
+		cmd_token_3_4(app, *command);
 }

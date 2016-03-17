@@ -6,13 +6,13 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 13:08:57 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/16 15:37:20 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/17 21:29:38 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	t_elem_env	*new_env(t_app *app, char *line)
+t_elem_env	*new_env(t_app *app, char *line)
 {
 	t_elem_env	*rt;
 	int			i;
@@ -40,23 +40,46 @@ static	t_elem_env	*new_env(t_app *app, char *line)
 	return (rt);
 }
 
-void				insert_env(t_app *app, int iteration)
+void				insert_new_env(t_app *app,t_elem_env *insert)
 {
 	t_env		*environement;
-	t_elem_env	*new;
+	int			iteration;
 
-	new = new_env(app, app->env[iteration]);
 	environement = &app->environement;
+	iteration = environement->size;
 	if (environement->first == 0)
 	{
-		environement->first = new;
-		environement->last = new;
+		environement->first = insert;
+		environement->last = insert;
 	}
 	else
 	{
-		environement->last->next = new;
-		new->previous = environement->last;
-		environement->last = new;
+		environement->last->next = insert;
+		insert->previous = environement->last;
+		environement->last = insert;
+	}
+	environement->size++;
+}
+
+void				insert_env(t_app *app)
+{
+	t_env		*environement;
+	t_elem_env	*insert;
+	int			iteration;
+
+	environement = &app->environement;
+	iteration = environement->size;
+	insert = new_env(app, app->env[iteration]);
+	if (environement->first == 0)
+	{
+		environement->first = insert;
+		environement->last = insert;
+	}
+	else
+	{
+		environement->last->next = insert;
+		insert->previous = environement->last;
+		environement->last = insert;
 	}
 	environement->size++;
 }
@@ -114,5 +137,5 @@ void				read_env(t_app *app)
 
 	i = -1;
 	while (app->env[++i])
-		insert_env(app, i);
+		insert_env(app);
 }
