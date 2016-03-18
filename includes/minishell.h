@@ -51,9 +51,13 @@ struct				s_command
 	t_elem_command	*first;
 	t_elem_command	*last;
 	t_elem_command	*current;
+	t_command		*next;
+	t_command		*previous;
+	pid_t			child_pid;
+	char			*cmd;
 	int				env_find_tmp;
 	int				size;
-	int				token;
+//	int				token;
 };
 
 struct				s_elem_env
@@ -81,6 +85,8 @@ struct 				s_app
 	t_command		*first_cmd;
 	t_command		*last_cmd;
 	t_command		*cur_cmd;
+	int				token;
+	int				nbr_cmd;
 	int				ac;
 	char			**av;
 	char			**env;
@@ -116,6 +122,7 @@ void				loop(t_app *app);
 /*
 ** command.c
 */
+void				clean_cmd(t_command	*lst);
 char				**cmd_to_tab(t_app *app);
 void				decode_command(t_app *app);
 
@@ -139,6 +146,12 @@ t_elem_env			*get_env(t_app *app, char *env);
 ** prompt.c
 */
 void				print_prompt(t_app *app);
+
+/*
+** lst_command.c 
+*/
+void				insert_new_lst_command(t_app *app);
+void				clean_lst_command(t_app *app);
 
 /*
 ** bi_??

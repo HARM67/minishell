@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 03:24:07 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 04:57:06 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,30 +45,35 @@ void	cmd_token_0(t_app *app, char c)
 {
 	if (c != ' ' && c != '\t')
 	{
+		if (c == '|')
+		{
+			insert_new_lst_command(app);
+			return ;
+		}
 		insert_new_command(app);
 		if (c == '"')
 		{
-			app->cur_cmd->token = 2;
+			app->token = 2;
 		}
 		else if (c != '$' && c != '~')
 		{
 			app->cur_cmd->last->command[app->cur_cmd->last->size] = c;
 			app->cur_cmd->last->size++;
-			app->cur_cmd->token = 1;
+			app->token = 1;
 		}
 		else if (c == '$')
-			app->cur_cmd->token = 3;
+			app->token = 3;
 		else if (c == '~')
-			app->cur_cmd->token = 5;
+			app->token = 5;
 	}
 }
 
-void	clean_cmd(t_app *app)
+void	clean_cmd(t_command	*lst)
 {
 	t_elem_command	*elm;
 	t_elem_command	*elm2;
 
-	elm = app->cur_cmd->first;
+	elm = lst->first;
 	while (elm)
 	{
 		elm2 = elm->next;
@@ -85,9 +90,9 @@ void	cmd_token_1(t_app *app, char c)
 		app->cur_cmd->last->size++;
 	}
 	else if (c == '$')
-		app->cur_cmd->token = 3;
+		app->token = 3;
 	else
-		app->cur_cmd->token = 0;
+		app->token = 0;
 }
 
 void	cmd_token_2(t_app *app, char c)
@@ -98,9 +103,9 @@ void	cmd_token_2(t_app *app, char c)
 		app->cur_cmd->last->size++;
 	}
 	else if (c == '$')
-		app->cur_cmd->token = 4;
+		app->token = 4;
 	else
-		app->cur_cmd->token = 0;
+		app->token = 0;
 }
 
 void	cmd_token_3_4(t_app *app, char c)
@@ -127,15 +132,15 @@ void	cmd_token_3_4(t_app *app, char c)
 		}
 		app->cur_cmd->env_find_tmp = 0;
 		ft_bzero(app->cur_cmd->env_find, ENV_NAME_LENGTH);
-		if ((app->cur_cmd->token == 3 && (c == ' ' || c == '\t')) ||
-				(app->cur_cmd->token == 4 && c == '"'))
-			app->cur_cmd->token = 0;
+		if ((app->token == 3 && (c == ' ' || c == '\t')) ||
+				(app->token == 4 && c == '"'))
+			app->token = 0;
 		else
 		{
-			app->cur_cmd->token -= 2;
-		if (app->cur_cmd->token == 1)
+			app->token -= 2;
+		if (app->token == 1)
 			cmd_token_1(app, c);
-		else if (app->cur_cmd->token == 2)
+		else if (app->token == 2)
 			cmd_token_2(app, c);
 		}
 	}
@@ -177,33 +182,30 @@ void	decode_command(t_app *app)
 	t_command	*lst_command;
 	char		*command;
 	
+	if (app->token == 0)
+		insert_new_lst_command(app);
 	lst_command = app->cur_cmd;
-	if (lst_command->token == 0)
-	{
-		clean_cmd(app);
-		ft_bzero(lst_command, sizeof(t_command));
-	}
 	command = app->str_cur_cmd;
 	while (*command)
 	{
-		if (lst_command->token == 0)
+		if (app->token == 0)
 			cmd_token_0(app, *command);
-		else if (lst_command->token == 1)
+		else if (app->token == 1)
 			cmd_token_1(app, *command);
-		else if (lst_command->token == 2)
+		else if (app->token == 2)
 			cmd_token_2(app, *command);
-		else if (lst_command->token == 3 || lst_command->token == 4)
+		else if (app->token == 3 || app->token == 4)
 			cmd_token_3_4(app, *command);
 		command++;
 	}
-	if (lst_command->token == 3 || lst_command->token == 4)
+	if (app->token == 3 || app->token == 4)
 	{
 		cmd_token_3_4(app, *command);
-		lst_command->token = 0;
+		app->token = 0;
 	}
-	if (lst_command->token == 1)
-		lst_command->token = 0;
-	if (lst_command->token == 2)
+	if (app->token == 1)
+		app->token = 0;
+	if (app->token == 2)
 	{
 		app->cur_cmd->last->command[app->cur_cmd->last->size] = '\n';
 		app->cur_cmd->last->size++;

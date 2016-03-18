@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/17 16:44:43 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 03:20:35 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 05:11:12 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,29 +88,33 @@ char	*check_cmd(t_app *app)
 	return (0);
 }
 
+void	*set_cmd(t_app *app)
+{
+	char	*cmd;
+
+	if (app->cur_cmd->first->command[0] == '.' || 
+		app->cur_cmd->first->command[0] == '/')
+		app->cur_cmd->cmd = check_cmd(app);
+	else
+		app->cur_cmd->cmd = search_cmd(app);
+}
+
 void	execute(t_app *app)
 {
 	int 	rt;
 	int		rt2;
 	char	*cmd;
-	pid_t	father;
-	char	tmp[256];
 
-	if (app->cur_cmd->first->command[0] == '.' || 
-		app->cur_cmd->first->command[0] == '/')
-		cmd = check_cmd(app);
-	else
-		cmd = search_cmd(app);
-	if (!cmd)
-		return ;
-	father = fork();
-	if (father)
+	while (app->cur_cmd)
 	{
-		free(cmd);
-		rt2 = wait(&rt);
-	}
-	else
-	{
-		ft_printf("%d %s\n", execve(cmd, cmd_to_tab(app) , env_to_tab(app)), cmd);
+		set_cmd(app);
+		if (!app->cur_cmd->cmd)
+			return ;
+		app->cur_cmd->child_pid = fork();
+		if (app->cur_cmd->child_pid)
+			rt2 = wait(&rt);
+		else
+			execve(app->cur_cmd->cmd, cmd_to_tab(app) , env_to_tab(app));
+		app->cur_cmd = app->cur_cmd->next;
 	}
 }
