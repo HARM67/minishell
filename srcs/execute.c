@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/17 16:44:43 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 05:11:12 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 06:05:37 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,8 @@ char	*check_cmd(t_app *app)
 	return (0);
 }
 
-void	*set_cmd(t_app *app)
+void	set_cmd(t_app *app)
 {
-	char	*cmd;
-
 	if (app->cur_cmd->first->command[0] == '.' || 
 		app->cur_cmd->first->command[0] == '/')
 		app->cur_cmd->cmd = check_cmd(app);
@@ -102,19 +100,33 @@ void	*set_cmd(t_app *app)
 void	execute(t_app *app)
 {
 	int 	rt;
-	int		rt2;
-	char	*cmd;
 
 	while (app->cur_cmd)
 	{
+		if (app->cur_cmd->next && app->cur_cmd->next->piped)
+			pipe(app->cur_cmd->next->fildes);
 		set_cmd(app);
 		if (!app->cur_cmd->cmd)
 			return ;
 		app->cur_cmd->child_pid = fork();
-		if (app->cur_cmd->child_pid)
-			rt2 = wait(&rt);
-		else
+		if (app->cur_cmd->child_pid == 0)
+		{
+			if (app->cur_cmd->next && app->cur_cmd->next->piped)
+			{
+				close(app->cur_cmd->next->fildes[0]);
+				dup2(app->cur_cmd->next->fildes[1], 1);
+			}
+			if (app->cur_cmd->piped)
+			{
+				dup2(app->cur_cmd->fildes[0], 0);
+			}
 			execve(app->cur_cmd->cmd, cmd_to_tab(app) , env_to_tab(app));
+		}
+		if (app->cur_cmd->next && app->cur_cmd->next->piped)
+			close(app->cur_cmd->next->fildes[1]);
+		if (app->cur_cmd->piped)
+			close(app->cur_cmd->fildes[0]);
+		wait(&rt);
 		app->cur_cmd = app->cur_cmd->next;
 	}
 }

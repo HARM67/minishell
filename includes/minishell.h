@@ -19,6 +19,7 @@
 # define NBR_BUILTIN			5
 
 # define MAX_PROMT_LENGTH		256
+# define MAX_FILENAME			256
 
 
 typedef struct s_app			t_app;
@@ -27,6 +28,9 @@ typedef struct s_env			t_env;
 typedef struct s_elem_command	t_elem_command;
 typedef struct s_command		t_command;
 typedef struct s_built_in		t_built_in;
+typedef struct s_file_out		t_file_out;
+typedef struct s_file_in		t_file_in;
+typedef struct s_file_lst		t_file_lst;
 typedef struct stat				t_stat;
 
 struct				s_built_in
@@ -45,6 +49,32 @@ struct				s_elem_command
 	char			command[COMMAND_ELEM_LENGTH];
 };
 
+struct				s_file_out
+{
+	char			filename[MAX_FILENAME];
+	int				fd;
+	t_file_out		*next;
+	t_file_out		*previous;
+};
+
+struct				s_file_in
+{
+	char			filename[MAX_FILENAME];
+	int				fd;
+	t_file_in		*next;
+	t_file_in		*previous;
+};
+
+struct				s_file_lst
+{
+	t_file_out		*first_out;
+	t_file_out		*last_out;
+	t_file_in		*first_in;
+	t_file_in		*last_in;
+	int				nbr_in;
+	int				nbr_out;
+};
+
 struct				s_command
 {
 	char			env_find[ENV_NAME_LENGTH];
@@ -53,10 +83,14 @@ struct				s_command
 	t_elem_command	*current;
 	t_command		*next;
 	t_command		*previous;
+	t_file_lst		files;
 	pid_t			child_pid;
 	char			*cmd;
 	int				env_find_tmp;
 	int				size;
+	char			piped;
+	int				fildes[2];
+
 //	int				token;
 };
 
@@ -154,10 +188,19 @@ void				insert_new_lst_command(t_app *app);
 void				clean_lst_command(t_app *app);
 
 /*
+** files.c
+*/
+int					is_file_char(char c);
+void				insert_file_out(t_file_lst *lst, char	*filename);
+void				clean_file_lst(t_file_lst *lst);
+
+/*
 ** bi_??
 */
 void				bi_exit(t_app *app);
 void				bi_setenv(t_app *app);
 void				bi_unsetenv(t_app *app);
 void				bi_cd(t_app *app);
+
+
 #endif

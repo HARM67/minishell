@@ -1,0 +1,25 @@
+total 59
+drwxrwxr-x+ 61 root      admin       2074 Mar  9 10:35 Applications
+drwxr-xr-x+ 65 root      wheel       2210 Jan 15 16:11 Library
+drwxr-xr-x@  2 root      wheel         68 Oct 18 16:28 Network
+drwxr-xr-x@  4 root      wheel        136 Jan 25 10:20 System
+drwxr-xr-x   7 root      admin        238 Dec 28 17:34 Users
+drwxrwxrwt@  5 root      admin        170 Mar 18 03:09 Volumes
+drwx------   2 mfroehly  2015_paris  4096 Feb 20 14:13 backup
+drwxr-xr-x@ 40 root      wheel       1360 Mar  1 19:06 bin
+drwxr-xr-x   2 root      wheel         68 Dec  1 11:44 cdn
+drwxrwxr-t@  2 root      admin         68 Oct 18 16:28 cores
+dr-xr-xr-x   3 root      wheel       4195 Mar 16 14:00 dev
+lrwxr-xr-x@  1 root      wheel         11 Oct 18 16:27 etc -> private/etc
+drwxrwxrwt  61 root      wheel       2074 Feb 25 11:57 goinfre
+dr-xr-xr-x@  2 root      wheel         68 Oct 18 16:38 home
+-rw-r--r--@  1 root      wheel        313 Aug 23  2015 installer.failurerequests
+dr-xr-xr-x@  2 root      wheel         68 Oct  6 14:25 net
+drwxr-xr-x   8 mfroehly  2015_paris  4096 Feb 18 17:26 nfs
+drwxr-xr-x   3 root      wheel        102 Oct  1 21:42 opt
+drwxr-xr-x@  6 root      wheel        204 Oct 18 16:28 private
+drwxr-xr-x@ 60 root      wheel       2040 Jan 25 10:19 sbin
+dr-xr-xr-x   2 root      wheel          1 Mar 16 14:01 sgoinfre
+lrwxr-xr-x@  1 root      wheel         11 Oct 18 16:27 tmp -> private/tmp
+drwxr-xr-x@ 11 root      wheel        374 Nov 16 15:51 usr
+lrwxr-xr-x@  1 root      wheel         11 Oct 18 16:27 var -> private/var

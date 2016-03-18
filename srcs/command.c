@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 04:57:06 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 06:46:00 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	cmd_token_0(t_app *app, char c)
 		if (c == '|')
 		{
 			insert_new_lst_command(app);
+			app->cur_cmd->piped = 1;
 			return ;
 		}
 		insert_new_command(app);
@@ -177,6 +178,15 @@ char	**cmd_to_tab(t_app *app)
 	return (rt);
 }
 
+/*
+void	cmd_token_11(t_app *app, char c)
+{
+	if (is_file_char(c))
+	{
+		app->cur_cmd->last_out.filename;
+	}
+}
+*/
 void	decode_command(t_app *app)
 {
 	t_command	*lst_command;
