@@ -1,31 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   bi_cd.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/03/17 16:44:33 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 17:22:27 by mfroehly         ###   ########.fr       */
+/*   Created: 2016/03/17 23:23:43 by mfroehly          #+#    #+#             */
+/*   Updated: 2016/03/18 00:50:53 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	execute(t_app *app)
+void	bi_cd(t_app *app)
 {
-	int rt;
-	int	rt2;
-	char tab[] = {"/bin/ls", "-l"};
-	pid_t	father;
+	t_elem_env	*home;
 
-	father = fork();
-	if (father)
+	if (app->lst_cmd.size == 2)
+		if(chdir(app->lst_cmd.first->next->command) == -1)
+			ft_printf("cd: no such file or directory: %s\n",
+					app->lst_cmd.first->next->command);
+	if (app->lst_cmd.size == 1)
 	{
-		rt2 = wait(&rt);
-	}
-	else
-	{
-		execve("/bin/ls", tab, app->env);
+		home = get_env(app, "HOME");
+		if(chdir(home->content) == -1)
+			ft_printf("cd: no such file or directory: %s\n",
+					home->content);
 	}
 }

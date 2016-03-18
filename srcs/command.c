@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 21:02:44 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 01:03:50 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,8 +178,11 @@ void	decode_command(t_app *app)
 	char		*command;
 	
 	lst_command = &app->lst_cmd;
-	clean_cmd(app);
-	ft_bzero(lst_command, sizeof(t_command));
+	if (lst_command->token == 0)
+	{
+		clean_cmd(app);
+		ft_bzero(lst_command, sizeof(t_command));
+	}
 	command = app->str_cur_cmd;
 	while (*command)
 	{
@@ -194,5 +197,15 @@ void	decode_command(t_app *app)
 		command++;
 	}
 	if (lst_command->token == 3 || lst_command->token == 4)
+	{
 		cmd_token_3_4(app, *command);
+		lst_command->token = 0;
+	}
+	if (lst_command->token == 1)
+		lst_command->token = 0;
+	if (lst_command->token == 2)
+	{
+		app->lst_cmd.last->command[app->lst_cmd.last->size] = '\n';
+		app->lst_cmd.last->size++;
+	}
 }

@@ -16,7 +16,7 @@
 
 # define COMMAND_ELEM_LENGTH	1024
 # define BUILT_IN_CMD_LENGTH	256
-# define NBR_BUILTIN			3
+# define NBR_BUILTIN			5
 
 # define MAX_PROMT_LENGTH		256
 
@@ -102,6 +102,7 @@ void				put_error(char *str);
 t_elem_env			*new_env(t_app *app, char *line);
 char				**env_to_tab(t_app *app);
 void				insert_env(t_app *app);
+void				insert_new_env(t_app *app, t_elem_env *new);
 void				read_env(t_app *app);
 
 /*
@@ -141,4 +142,6 @@ void				print_prompt(t_app *app);
 */
 void				bi_exit(t_app *app);
 void				bi_setenv(t_app *app);
+void				bi_unsetenv(t_app *app);
+void				bi_cd(t_app *app);
 #endif

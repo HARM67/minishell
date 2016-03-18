@@ -8,7 +8,7 @@ FLAG=-Wall -Wextra -g
 
 SRCS= main.c app.c read_env.c put_error.c command.c loop.c get_next_line.c \
 	  built_in.c execute.c environement.c prompt.c \
-	  bi_exit.c bi_setenv.c
+	  bi_exit.c bi_setenv.c bi_unsetenv.c bi_cd.c
 
 OBJ=$(SRCS:.c=.o)
 

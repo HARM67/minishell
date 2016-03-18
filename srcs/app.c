@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 12:58:56 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 19:21:59 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 01:07:21 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	sig_kill(int n)
 
 void	init_app(t_app *app)
 {
-	ft_strcpy(app->prompt, "\033[32;2mminishell\033[31m>\033[0m");
+	getcwd(app->prompt, MAX_PROMT_LENGTH);
 	read_env(app);
 	init_built_in(app);
 	signal(SIGTSTP, *sig_interupt);
@@ -35,12 +35,17 @@ void	run_app(t_app *app)
 {
 	while (!app->stop)
 	{
-		print_prompt(app);
+		if (app->lst_cmd.token == 0)
+			print_prompt(app);
+		else if (app->lst_cmd.token == 2)
+			ft_putstr("dquote> ");
 		get_next_line(0, &app->str_cur_cmd);
 		decode_command(app);
+		free(app->str_cur_cmd);
 		if (!app->lst_cmd.size)
 			continue ;
-		if (!check_built_in(app))
+		if (app->lst_cmd.token == 0 && !check_built_in(app))
 			execute(app);
+		getcwd(app->prompt, MAX_PROMT_LENGTH);
 	}
 }
