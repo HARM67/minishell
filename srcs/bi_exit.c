@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 21:59:25 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/17 14:37:54 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 03:21:33 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	bi_exit(t_app *app)
 {
-	if (app->lst_cmd.size != 1)
+	if (app->cur_cmd->size != 1)
 		ft_putendl("Too many arguments");
 	else
 		exit(0);

@@ -78,6 +78,9 @@ struct 				s_app
 	t_built_in		bi_cmd[NBR_BUILTIN];
 	t_env			environement;
 	t_command		lst_cmd;
+	t_command		*first_cmd;
+	t_command		*last_cmd;
+	t_command		*cur_cmd;
 	int				ac;
 	char			**av;
 	char			**env;

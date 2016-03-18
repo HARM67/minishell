@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 22:06:05 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 02:13:34 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 03:22:27 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int		check_built_in(t_app *app)
 	i = -1;
 	while (++i < NBR_BUILTIN)
 	{
-		if (ft_strcmp(app->lst_cmd.first->command,
+		if (ft_strcmp(app->cur_cmd->first->command,
 			app->bi_cmd[i].command) == 0)
 		{
 			app->bi_cmd[i].do_it(app);

@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 01:03:50 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/18 03:24:07 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,18 +27,18 @@ void	insert_new_command(t_app *app)
 	t_elem_command	*new;
 
 	new = new_elem_command();
-	if (!app->lst_cmd.first)
+	if (!app->cur_cmd->first)
 	{
-		app->lst_cmd.first = new;
-		app->lst_cmd.last = new;
+		app->cur_cmd->first = new;
+		app->cur_cmd->last = new;
 	}
 	else
 	{
-		app->lst_cmd.last->next = new;
-		new->previous = app->lst_cmd.last;
-		app->lst_cmd.last = new;
+		app->cur_cmd->last->next = new;
+		new->previous = app->cur_cmd->last;
+		app->cur_cmd->last = new;
 	}
-	app->lst_cmd.size++;
+	app->cur_cmd->size++;
 }
 
 void	cmd_token_0(t_app *app, char c)
@@ -48,18 +48,18 @@ void	cmd_token_0(t_app *app, char c)
 		insert_new_command(app);
 		if (c == '"')
 		{
-			app->lst_cmd.token = 2;
+			app->cur_cmd->token = 2;
 		}
 		else if (c != '$' && c != '~')
 		{
-			app->lst_cmd.last->command[app->lst_cmd.last->size] = c;
-			app->lst_cmd.last->size++;
-			app->lst_cmd.token = 1;
+			app->cur_cmd->last->command[app->cur_cmd->last->size] = c;
+			app->cur_cmd->last->size++;
+			app->cur_cmd->token = 1;
 		}
 		else if (c == '$')
-			app->lst_cmd.token = 3;
+			app->cur_cmd->token = 3;
 		else if (c == '~')
-			app->lst_cmd.token = 5;
+			app->cur_cmd->token = 5;
 	}
 }
 
@@ -68,7 +68,7 @@ void	clean_cmd(t_app *app)
 	t_elem_command	*elm;
 	t_elem_command	*elm2;
 
-	elm = app->lst_cmd.first;
+	elm = app->cur_cmd->first;
 	while (elm)
 	{
 		elm2 = elm->next;
@@ -81,26 +81,26 @@ void	cmd_token_1(t_app *app, char c)
 {
 	if (c != ' ' && c != '\t' && c != '$' && c != '~')
 	{
-		app->lst_cmd.last->command[app->lst_cmd.last->size] = c;
-		app->lst_cmd.last->size++;
+		app->cur_cmd->last->command[app->cur_cmd->last->size] = c;
+		app->cur_cmd->last->size++;
 	}
 	else if (c == '$')
-		app->lst_cmd.token = 3;
+		app->cur_cmd->token = 3;
 	else
-		app->lst_cmd.token = 0;
+		app->cur_cmd->token = 0;
 }
 
 void	cmd_token_2(t_app *app, char c)
 {
 	if (c != '"' && c != '$' && c != '~')
 	{
-		app->lst_cmd.last->command[app->lst_cmd.last->size] = c;
-		app->lst_cmd.last->size++;
+		app->cur_cmd->last->command[app->cur_cmd->last->size] = c;
+		app->cur_cmd->last->size++;
 	}
 	else if (c == '$')
-		app->lst_cmd.token = 4;
+		app->cur_cmd->token = 4;
 	else
-		app->lst_cmd.token = 0;
+		app->cur_cmd->token = 0;
 }
 
 void	cmd_token_3_4(t_app *app, char c)
@@ -110,32 +110,32 @@ void	cmd_token_3_4(t_app *app, char c)
 	char	*tmp;
 
 	if (ft_isalnum(c))
-		app->lst_cmd.env_find[app->lst_cmd.env_find_tmp++] = c;
+		app->cur_cmd->env_find[app->cur_cmd->env_find_tmp++] = c;
 	else
 	{
 		i = -1;
-		tmp2 = get_env(app, app->lst_cmd.env_find);
+		tmp2 = get_env(app, app->cur_cmd->env_find);
 		if (tmp2)
 		{
 			tmp = tmp2->content;
 			while (*tmp)
 			{
-				app->lst_cmd.last->command[app->lst_cmd.last->size] = *tmp;
+				app->cur_cmd->last->command[app->cur_cmd->last->size] = *tmp;
 				tmp++;
-				app->lst_cmd.last->size++;
+				app->cur_cmd->last->size++;
 			}
 		}
-		app->lst_cmd.env_find_tmp = 0;
-		ft_bzero(app->lst_cmd.env_find, ENV_NAME_LENGTH);
-		if ((app->lst_cmd.token == 3 && (c == ' ' || c == '\t')) ||
-				(app->lst_cmd.token == 4 && c == '"'))
-			app->lst_cmd.token = 0;
+		app->cur_cmd->env_find_tmp = 0;
+		ft_bzero(app->cur_cmd->env_find, ENV_NAME_LENGTH);
+		if ((app->cur_cmd->token == 3 && (c == ' ' || c == '\t')) ||
+				(app->cur_cmd->token == 4 && c == '"'))
+			app->cur_cmd->token = 0;
 		else
 		{
-			app->lst_cmd.token -= 2;
-		if (app->lst_cmd.token == 1)
+			app->cur_cmd->token -= 2;
+		if (app->cur_cmd->token == 1)
 			cmd_token_1(app, c);
-		else if (app->lst_cmd.token == 2)
+		else if (app->cur_cmd->token == 2)
 			cmd_token_2(app, c);
 		}
 	}
@@ -145,7 +145,7 @@ void	print_lst_cmd(t_app *app)
 {
 	t_elem_command *elm;
 
-	elm = app->lst_cmd.first;
+	elm = app->cur_cmd->first;
 	while (elm)
 	{
 		ft_putendl(elm->command);
@@ -160,8 +160,8 @@ char	**cmd_to_tab(t_app *app)
 	int				i;
 
 	i = 0;
-	rt = (char**)ft_memalloc(sizeof(char*) * (app->lst_cmd.size + 1));
-	elm = app->lst_cmd.first;
+	rt = (char**)ft_memalloc(sizeof(char*) * (app->cur_cmd->size + 1));
+	elm = app->cur_cmd->first;
 	while (elm)
 	{
 		rt[i] = (char*)ft_memalloc(sizeof(char) * (elm->size + 1));
@@ -177,7 +177,7 @@ void	decode_command(t_app *app)
 	t_command	*lst_command;
 	char		*command;
 	
-	lst_command = &app->lst_cmd;
+	lst_command = app->cur_cmd;
 	if (lst_command->token == 0)
 	{
 		clean_cmd(app);
@@ -205,7 +205,7 @@ void	decode_command(t_app *app)
 		lst_command->token = 0;
 	if (lst_command->token == 2)
 	{
-		app->lst_cmd.last->command[app->lst_cmd.last->size] = '\n';
-		app->lst_cmd.last->size++;
+		app->cur_cmd->last->command[app->cur_cmd->last->size] = '\n';
+		app->cur_cmd->last->size++;
 	}
 }
