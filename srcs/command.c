@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/03/16 14:46:50 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 06:46:00 by mfroehly         ###   ########.fr       */
+/*   Created: 2016/03/18 23:24:59 by mfroehly          #+#    #+#             */
+/*   Updated: 2016/03/19 02:38:34 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,24 @@ void	cmd_token_0(t_app *app, char c)
 	{
 		if (c == '|')
 		{
-			insert_new_lst_command(app);
-			app->cur_cmd->piped = 1;
+			app->token = 10;
+			return ;
+		}
+		else if (c == ';')
+		{
+			app->token = 6;
+			return ;
+		}
+		else if (c == '>')
+		{
+			insert_file_out(&app->cur_cmd->files);
+			app->token = 20;
+			return ;
+		}
+		else if (c == '<')
+		{
+			insert_file_in(&app->cur_cmd->files);
+			app->token = 21;
 			return ;
 		}
 		insert_new_command(app);
@@ -74,6 +90,7 @@ void	clean_cmd(t_command	*lst)
 	t_elem_command	*elm;
 	t_elem_command	*elm2;
 
+	clean_file_lst(&lst->files);
 	elm = lst->first;
 	while (elm)
 	{
@@ -178,15 +195,99 @@ char	**cmd_to_tab(t_app *app)
 	return (rt);
 }
 
-/*
-void	cmd_token_11(t_app *app, char c)
+void	cmd_token_10(t_app *app, char c)
 {
-	if (is_file_char(c))
+	if (!app->cur_cmd->first)
 	{
-		app->cur_cmd->last_out.filename;
+		put_error_cmd(app, "minishell: parse error");
+		return ;
+	}
+	if (c != ' ' && c != '\t')
+	{
+		if (c == '|')
+		{
+			app->token = 12;
+			return ;
+		}
+		app->token = 0;
+		insert_new_lst_command(app);
+		app->cur_cmd->piped = 1;
+		insert_new_command(app);
+		if (c == '"')
+		{
+			app->token = 2;
+		}
+		else if (c != '$' && c != '~')
+		{
+			app->cur_cmd->last->command[app->cur_cmd->last->size] = c;
+			app->cur_cmd->last->size++;
+			app->token = 1;
+		}
+		else if (c == '$')
+			app->token = 3;
+		else if (c == '~')
+			app->token = 5;
 	}
 }
-*/
+
+void	cmd_token_20(t_app *app, char c)
+{
+	t_file_out	*out;
+
+	out = app->cur_cmd->files.last_out;
+	if (is_file_char(c))
+		out->filename[out->size++] = c;
+	else if (out->filename[0] != '\0')
+	{
+		app->token = 0;
+		cmd_token_0(app, c);
+	}
+}
+
+void	cmd_token_21(t_app *app, char c)
+{
+	t_file_in	*in;
+
+	in = app->cur_cmd->files.last_in;
+	if (is_file_char(c))
+		in->filename[in->size++] = c;
+	else if (in->filename[0] != '\0')
+	{
+		app->token = 0;
+		cmd_token_0(app, c);
+	}
+}
+
+void	cmd_token_6(t_app *app, char c)
+{
+	if (c != ' ' && c != '\t')
+	{
+		if (c == '|')
+		{
+			app->token = 12;
+			return ;
+		}
+		app->token = 0;
+		if (app->cur_cmd->first)
+			insert_new_lst_command(app);
+		insert_new_command(app);
+		if (c == '"')
+		{
+			app->token = 2;
+		}
+		else if (c != '$' && c != '~')
+		{
+			app->cur_cmd->last->command[app->cur_cmd->last->size] = c;
+			app->cur_cmd->last->size++;
+			app->token = 1;
+		}
+		else if (c == '$')
+			app->token = 3;
+		else if (c == '~')
+			app->token = 5;
+	}
+}
+
 void	decode_command(t_app *app)
 {
 	t_command	*lst_command;
@@ -204,6 +305,14 @@ void	decode_command(t_app *app)
 			cmd_token_1(app, *command);
 		else if (app->token == 2)
 			cmd_token_2(app, *command);
+		else if (app->token == 6)
+			cmd_token_6(app, *command);
+		else if (app->token == 10)
+			cmd_token_10(app, *command);
+		else if (app->token == 20)
+			cmd_token_20(app, *command);
+		else if (app->token == 21)
+			cmd_token_21(app, *command);
 		else if (app->token == 3 || app->token == 4)
 			cmd_token_3_4(app, *command);
 		command++;
@@ -213,7 +322,7 @@ void	decode_command(t_app *app)
 		cmd_token_3_4(app, *command);
 		app->token = 0;
 	}
-	if (app->token == 1)
+	if (app->token == 1 || app->token == 10 || app->token == 20 || app->token == 21)
 		app->token = 0;
 	if (app->token == 2)
 	{

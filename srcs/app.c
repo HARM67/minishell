@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/16 12:58:56 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 05:32:02 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/19 01:09:54 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,10 @@ void	run_app(t_app *app)
 	while (!app->stop)
 	{
 		if (app->token == 0)
+		{
+			app->bad_cmd = 0;
 			print_prompt(app);
+		}
 		else if (app->token == 2)
 			ft_putstr("dquote> ");
 		get_next_line(0, &app->str_cur_cmd);

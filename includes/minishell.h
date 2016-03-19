@@ -2,6 +2,7 @@
 # define MINISHELL_H
 
 # include <unistd.h>
+# include <fcntl.h>
 # include <sys/wait.h>
 # include "ft_printf.h"
 # include "get_next_line.h"
@@ -53,6 +54,7 @@ struct				s_file_out
 {
 	char			filename[MAX_FILENAME];
 	int				fd;
+	int				size;
 	t_file_out		*next;
 	t_file_out		*previous;
 };
@@ -61,6 +63,7 @@ struct				s_file_in
 {
 	char			filename[MAX_FILENAME];
 	int				fd;
+	int				size;
 	t_file_in		*next;
 	t_file_in		*previous;
 };
@@ -121,6 +124,7 @@ struct 				s_app
 	t_command		*cur_cmd;
 	int				token;
 	int				nbr_cmd;
+	int				bad_cmd;
 	int				ac;
 	char			**av;
 	char			**env;
@@ -138,10 +142,12 @@ void				run_app(t_app *app);
 **	put_error.c
 */
 void				put_error(char *str);
+void				put_error_cmd(t_app *app, char	*str);
 
 /*
 ** read_env.c
 */
+void				print_tab(char	**tab);
 t_elem_env			*new_env(t_app *app, char *line);
 char				**env_to_tab(t_app *app);
 void				insert_env(t_app *app);
@@ -190,9 +196,13 @@ void				clean_lst_command(t_app *app);
 /*
 ** files.c
 */
+void				print_files_lst(t_file_lst *lst);
 int					is_file_char(char c);
-void				insert_file_out(t_file_lst *lst, char	*filename);
+void				insert_file_out(t_file_lst *lst);
+void				insert_file_in(t_file_lst *lst);
 void				clean_file_lst(t_file_lst *lst);
+void				link_out_file(t_file_lst *lst);
+void				link_in_file(t_file_lst *lst);
 
 /*
 ** bi_??
@@ -201,6 +211,4 @@ void				bi_exit(t_app *app);
 void				bi_setenv(t_app *app);
 void				bi_unsetenv(t_app *app);
 void				bi_cd(t_app *app);
-
-
 #endif

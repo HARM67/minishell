@@ -6,7 +6,7 @@
 /*   By: mfroehly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/03/17 16:44:43 by mfroehly          #+#    #+#             */
-/*   Updated: 2016/03/18 06:05:37 by mfroehly         ###   ########.fr       */
+/*   Updated: 2016/03/19 02:27:58 by mfroehly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ char	*check_cmd(t_app *app)
 {
 	t_stat			m_stat;
 
-	stat(app->cur_cmd->first->next->command, &m_stat);
+	stat(app->cur_cmd->first->command, &m_stat);
 	if (m_stat.st_mode & 0111)
 		return (ft_strdup(app->cur_cmd->first->command));
 	ft_printf("minishell: no such file or directory: %s\n", 
@@ -101,7 +101,7 @@ void	execute(t_app *app)
 {
 	int 	rt;
 
-	while (app->cur_cmd)
+	while (app->cur_cmd && !app->bad_cmd)
 	{
 		if (app->cur_cmd->next && app->cur_cmd->next->piped)
 			pipe(app->cur_cmd->next->fildes);
@@ -120,6 +120,9 @@ void	execute(t_app *app)
 			{
 				dup2(app->cur_cmd->fildes[0], 0);
 			}
+			link_out_file(&app->cur_cmd->files);
+			link_in_file(&app->cur_cmd->files);
+			//print_files_lst(&app->cur_cmd->files);
 			execve(app->cur_cmd->cmd, cmd_to_tab(app) , env_to_tab(app));
 		}
 		if (app->cur_cmd->next && app->cur_cmd->next->piped)
